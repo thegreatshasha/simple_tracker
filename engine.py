@@ -31,8 +31,8 @@ class TrackerEngine:
         # Drawing canvas
         self.fig, self.ax = plt.subplots()
         self.fig.show() # Should we keep this active permanently?
-        self.ax.set_xlim(0,4)
-        self.ax.set_ylim(0,4)
+        self.ax.set_xlim(0,10)
+        self.ax.set_ylim(0,10)
         
     def likelihood_mat(self, tracks, obs):
         """
@@ -92,10 +92,6 @@ class TrackerEngine:
         Returns:
             Nothing
         """
-        #print('kuch nahin karta ye method')
-        #print(self.tracks)
-        
-        #print(match_mat)
         
         for j in range(match_mat.shape[1]):
             total = match_mat[:,j].sum()
@@ -126,17 +122,18 @@ class TrackerEngine:
         for t in self.tracks:
             t.predict() 
 
-    def draw(self, obs):
+    def draw(self, obs, i):
         """ Draws things on a canvas object """
         time.sleep(1)
 
         for ob in obs:
-            self.ax.scatter(ob.item(),2, color='blue')
+            self.ax.scatter(i, ob.item()+2, color='blue')
         
             self.fig.canvas.draw()
+            time.sleep(1)
 
         for t in self.tracks:
-            self.ax.scatter(t.x[0].item(),1, color=t.color)
+            self.ax.scatter(i, t.x[0].item(), color=t.color)
         
             self.fig.canvas.draw()
 
@@ -150,15 +147,14 @@ class TrackerEngine:
         4. Updates tracks based on the match matrix result. Should have an edge case for 0 track size.
         5. Stores x estimates in another array which can then be printed.
         """
-        for obs in self.observations:
+        for i,obs in enumerate(self.observations):
             
             l_mat = self.likelihood_mat(self.tracks, obs)
             match_mat = self.match_mat(l_mat)
             
             self.update_trackers(obs, match_mat)
 
-            self.draw(obs)
-
+            self.draw(obs,i)
 
             self.prune()
             self.predict()

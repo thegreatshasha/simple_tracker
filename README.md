@@ -1,7 +1,7 @@
-##RUNNING
+## RUNNING
 * Run python test_engine.py
 
-##LEARNINGS
+## LEARNINGS
 
 * Work two zone blocks at least every day. Consistent and non linear progress will be made.
 

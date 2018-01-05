@@ -66,7 +66,7 @@ class TrackerEngineTest(unittest.TestCase):
             print(t.P, t.x)
 
     
-    def test_single_bead_moving(self):
+    def _test_single_bead_moving(self):
         """ Tests that a single bead moving at constant velocity of 1m/s is tracked by the engine. Plot trajectories. """
         detections = [[np.matrix(0.5)], [np.matrix(1)], [np.matrix(1.5)], [np.matrix(2)]]
         e = TrackerEngine(0.01, detections)
@@ -77,6 +77,25 @@ class TrackerEngineTest(unittest.TestCase):
             print(t.P, t.x)
 
         raw_input('your mom')
+
+    def test_two_beads_opposite(self):
+        detections = [
+                        [np.matrix(0.5), np.matrix(5)],
+                        [np.matrix(1), np.matrix(3.5)],
+                        [np.matrix(1.5), np.matrix(1.5)],
+                        [np.matrix(2), np.matrix(0)],
+                     ]
+        e = TrackerEngine(0.01, detections)
+        e.run()
+
+        print(e.tracks)
+        for t in e.tracks:
+            print(t.P, t.x)
+
+        raw_input('your mom')
+
+    def test_2d(self):
+        
 
     def _test_drawing(self):
         t1 = Track(np.matrix('0. 0.').T, np.matrix('1. 0.; 0. 1.'))

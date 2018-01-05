@@ -38,7 +38,7 @@ class Track:
         self.H = np.matrix('1. 0.')
         self.F = np.matrix('1. 1.; 0. 1.')
 
-        self.color = 'red'#random.choice(['r','g','b'])
+        self.color = random.choice(['red','green','cyan', 'magenta'])
         
     def predict(self):
         """
