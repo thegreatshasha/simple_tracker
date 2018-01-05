@@ -1,5 +1,7 @@
 import numpy as np
 from track import Track
+import matplotlib.pyplot as plt
+import time
 
 class TrackerEngine:
     """
@@ -25,6 +27,12 @@ class TrackerEngine:
         self.beta = beta
         self.tracks = []
         self.observations = observations
+
+        # Drawing canvas
+        self.fig, self.ax = plt.subplots()
+        self.fig.show() # Should we keep this active permanently?
+        self.ax.set_xlim(0,4)
+        self.ax.set_ylim(0,4)
         
     def likelihood_mat(self, tracks, obs):
         """
@@ -58,6 +66,9 @@ class TrackerEngine:
         """
         match_mat = np.zeros(l_mat.shape)
 
+        if match_mat.shape[0] == 0:
+            return match_mat
+
         for j in range(match_mat.shape[1]):
 
             t_idx = l_mat[:,j].argmax()
@@ -81,10 +92,10 @@ class TrackerEngine:
         Returns:
             Nothing
         """
-        print('kuch nahin karta ye method')
-        print(self.tracks)
+        #print('kuch nahin karta ye method')
+        #print(self.tracks)
         
-        print(match_mat)
+        #print(match_mat)
         
         for j in range(match_mat.shape[1]):
             total = match_mat[:,j].sum()
@@ -95,8 +106,41 @@ class TrackerEngine:
                 
             else:
                 # Pop new tracker ontop of the queue of trackers
-                t = Track(np.matrix([obs[j].item(), 0.]).T, np.matrix('1000. 0.; 0. 1000.'))
+                t = Track()
+                t.update(obs[j])
+                
                 self.tracks.append(t)
+
+    def prune(self):
+        """ Prunes low likelihood tracks (which haven't received any action in a while) """
+        new_tracks = []
+
+        for t in self.tracks:
+            if t.lhood > self.beta:
+                new_tracks.append(t)
+
+        self.tracks = new_tracks
+
+    def predict(self):
+        """ Projects ahead each remaining track """
+        for t in self.tracks:
+            t.predict() 
+
+    def draw(self, obs):
+        """ Draws things on a canvas object """
+        time.sleep(1)
+
+        for ob in obs:
+            self.ax.scatter(ob.item(),2, color='blue')
+        
+            self.fig.canvas.draw()
+
+        for t in self.tracks:
+            self.ax.scatter(t.x[0].item(),1, color=t.color)
+        
+            self.fig.canvas.draw()
+
+        # Also draw observations?
     
     def run(self):
         """
@@ -106,5 +150,17 @@ class TrackerEngine:
         4. Updates tracks based on the match matrix result. Should have an edge case for 0 track size.
         5. Stores x estimates in another array which can then be printed.
         """
-        pass
+        for obs in self.observations:
+            
+            l_mat = self.likelihood_mat(self.tracks, obs)
+            match_mat = self.match_mat(l_mat)
+            
+            self.update_trackers(obs, match_mat)
+
+            self.draw(obs)
+
+
+            self.prune()
+            self.predict()
+
         # THis is just a stupid for loop 

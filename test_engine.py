@@ -2,16 +2,18 @@ import unittest
 import numpy as np
 from engine import TrackerEngine
 from track import Track
+import matplotlib.pyplot as plt
+import time
 
 class TrackerEngineTest(unittest.TestCase):
     """Tests for `primes.py`."""
 
-    def test_likelihood_mat(self):
+    def _test_likelihood_mat(self):
         """ Provide mock tracker objects and detections and check that the correct likelihood value is generates """
         t1 = Track(np.matrix('0. 0.').T, np.matrix('1. 0.; 0. 1.'))
         t2 = Track(np.matrix('2. 2.').T, np.matrix('1. 0.; 0. 1.'))
-        tracks = [t1, t2]
-        #tracks = []
+        #tracks = [t1, t2]
+        tracks = []
 
         detections = [[np.matrix(0.), np.matrix(1.), np.matrix(2.)]]
 
@@ -38,27 +40,54 @@ class TrackerEngineTest(unittest.TestCase):
         tracks = [t1, t2]
 
         detections = [[np.matrix(0.), np.matrix(1.), np.matrix(2.)]]
-        match_mat = np.matrix('0 0 0; 0 0 1')
+        #match_mat = np.matrix('0 0 0; 0 0 1')
+        match_mat = np.matrix(np.zeros((0,3)))
 
         e = TrackerEngine(0.1, detections)
         #e.tracks = tracks
+        print(e.tracks)
         
         e.update_trackers(detections[0], match_mat)
+
+        print(e.tracks)
         
         for t in e.tracks:
             print(t.x[0].item())
         # Check that the length of the trackers has increased same as the no of empty columns
 
-    def _test_single_bead_static(self): # most important, plot trajectory first
+    def _test_single_bead_static_three_frames(self): # most important, plot trajectory first
         """ Single stationary bead tracking. See if one of the shadow trackers actually stays with the static observation. Also plot trajectories. """
         detections = [[np.matrix(1.5)], [np.matrix(1.5)], [np.matrix(1.5)]]
-        e = TrackerEngine(0.1, detections)
-        e.run()
+        e = TrackerEngine(0.01, detections)
+        e.run()    
+    
+        print(e.tracks)
+        for t in e.tracks:
+            print(t.P, t.x)
 
     
-#     def test_single_bead_moving(self):
-#         """ Tests that a single bead moving at constant velocity of 1m/s is tracked by the engine. Plot trajectories. """
-#         pass
+    def test_single_bead_moving(self):
+        """ Tests that a single bead moving at constant velocity of 1m/s is tracked by the engine. Plot trajectories. """
+        detections = [[np.matrix(0.5)], [np.matrix(1)], [np.matrix(1.5)], [np.matrix(2)]]
+        e = TrackerEngine(0.01, detections)
+        e.run()    
+        
+        print(e.tracks)
+        for t in e.tracks:
+            print(t.P, t.x)
+
+        raw_input('your mom')
+
+    def _test_drawing(self):
+        t1 = Track(np.matrix('0. 0.').T, np.matrix('1. 0.; 0. 1.'))
+        t2 = Track(np.matrix('2. 2.').T, np.matrix('1. 0.; 0. 1.'))
+        tracks = [t1, t2]
+
+        e = TrackerEngine(0.1, [])
+        e.tracks = tracks
+        e.draw()
+
+        raw_input('your mom')
     
 #     def test_two_static_beads(self):
 #         """ Test that two stationary beads are tracked by the engine. Plot trajectories. """

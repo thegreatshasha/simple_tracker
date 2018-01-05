@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import multivariate_normal
+import random
 
 class Track:
     """
@@ -36,13 +37,17 @@ class Track:
         self.Q = np.matrix('0.0033 0.005; 0.005 0.001')/10
         self.H = np.matrix('1. 0.')
         self.F = np.matrix('1. 1.; 0. 1.')
+
+        self.color = 'red'#random.choice(['r','g','b'])
         
     def predict(self):
         """
         Predicts the future based on current state.
         """
+        print('previously', self.P, self.F*self.P*self.F.T)
         self.x = self.F * self.x
         self.P = self.F*self.P*self.F.T + self.Q
+        print('after', self.P)
         
     def update(self, y):
         """
@@ -57,6 +62,8 @@ class Track:
         K = self.P*self.H.T*(self.H*self.P*self.H.T + self.R).I # Kalman gain computation
         self.x = self.x + K*(y - self.H*self.x) # Update mean
         self.P = (np.eye(2) - K*self.H)*self.P # Update covariance
+
+        self.lhood = self.likelihood(y)
         
     def likelihood(self, y):
         """
