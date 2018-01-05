@@ -18,3 +18,7 @@
 * Visualize things as much as you can.
 
 * Start separate repository for gurobi matching.
+
+* Create dataset of randomly moving particles and velocities.
+
+* Create jpda dataset to debug. Show that hungarian fails.

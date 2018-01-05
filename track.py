@@ -16,7 +16,7 @@ class Track:
         color : Unique color associated with track. This helps in visualizing the track
     """
     
-    def __init__(self, x=np.matrix('0. 0.').T, P=np.matrix(np.eye(2))*1000):
+    def __init__(self, x=np.matrix('0. 0. 0. 0.').T, P=np.matrix(np.eye(4))*1000):
         """
         Initializes the track at a particular location.
             
@@ -31,14 +31,30 @@ class Track:
         self.x = x
         self.P = P
 
-        # Motion model parameters
+        # Motion model parameters for 1d
         # Remove these hardcoded values asap
-        self.R = np.matrix(0.1)
-        self.Q = np.matrix('0.0033 0.005; 0.005 0.001')/10
-        self.H = np.matrix('1. 0.')
-        self.F = np.matrix('1. 1.; 0. 1.')
+        #self.R = np.matrix(0.1)
+        #self.Q = np.matrix('0.0033 0.005; 0.005 0.001')/10
+        #self.H = np.matrix('1. 0.')
+        #self.F = np.matrix('1. 1.; 0. 1.')
 
-        self.color = random.choice(['red','green','cyan', 'magenta'])
+        # Motion model parameters for 2d
+        self.R = np.matrix(np.eye(2))
+        self.Q = np.matrix('''
+                      0.33  0.    0.5   0.;
+                      0.    0.33  0.     0.5;
+                      0.    0.    1.     0.;
+                      0.    0.    0.     1.
+                      ''')/1000
+        self.H = np.matrix('1. 0. 0. 0.; 0. 1. 0. 0.')
+        self.F = np.matrix('''
+                      1. 0. 1. 0.;
+                      0. 1. 0. 1.;
+                      0. 0. 1. 0.;
+                      0. 0. 0. 1.
+                      ''')
+
+        self.color = np.random.rand(3,)
         
     def predict(self):
         """
@@ -61,7 +77,7 @@ class Track:
         """
         K = self.P*self.H.T*(self.H*self.P*self.H.T + self.R).I # Kalman gain computation
         self.x = self.x + K*(y - self.H*self.x) # Update mean
-        self.P = (np.eye(2) - K*self.H)*self.P # Update covariance
+        self.P = (np.eye(self.x.shape[0]) - K*self.H)*self.P # Update covariance
 
         self.lhood = self.likelihood(y)
         
@@ -75,10 +91,11 @@ class Track:
         Returns:
             likelihood (scalar): Probability of generating y based on the current belief
         """
-        obs_mean = self.H*self.x
+        obs_mean = np.asarray(self.H*self.x).reshape(-1)
         obs_cov = self.H*self.P*self.H.T + self.R
+        #print(obs_mean.shape, obs_cov.shape)
 
         var = multivariate_normal(obs_mean, obs_cov)
-        likelihood = var.pdf(y)
-
+        likelihood = var.pdf(np.asarray(y).reshape(-1))
+        
         return likelihood

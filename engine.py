@@ -124,16 +124,16 @@ class TrackerEngine:
 
     def draw(self, obs, i):
         """ Draws things on a canvas object """
-        time.sleep(1)
+        #time.sleep(1)
 
         for ob in obs:
-            self.ax.scatter(i, ob.item()+2, color='blue')
+            self.ax.scatter(ob[0].item(), ob[1].item(), color='blue')
         
             self.fig.canvas.draw()
-            time.sleep(1)
+            time.sleep(0.1)
 
         for t in self.tracks:
-            self.ax.scatter(i, t.x[0].item(), color=t.color)
+            self.ax.scatter(t.x[0].item(), t.x[1].item(), color=t.color)
         
             self.fig.canvas.draw()
 
