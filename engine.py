@@ -53,7 +53,7 @@ class TrackerEngine:
         
         return l_mat
         
-    def match_mat(self, l_mat):
+    def match_mat_det(self, l_mat):
         """
         Matches trackers to indices based on the likelihood matrix.
         Matching strategies: {'greedy' | 'hungarian' | 'jdpa'}
@@ -76,6 +76,32 @@ class TrackerEngine:
 
             if score>self.beta:
                 match_mat[t_idx, j] = 1
+
+        return match_mat
+
+    def match_mat_tracker(self, l_mat):
+        """
+        Matches trackers to indices based on the likelihood matrix.
+        Matching strategies: {'greedy' | 'hungarian' | 'jdpa'}
+        
+        Args:
+            likelihood_mat (num_trackers, num_obs): Likelihood of each tracker generating each detection
+            
+        Returns:
+            match_mat (num_trackers, num_obs): Binary matrix specifying which tracker matches which detection
+        """
+        match_mat = np.zeros(l_mat.shape)
+
+        if match_mat.shape[0] == 0:
+            return match_mat
+
+        for i in range(match_mat.shape[0]):
+
+            j = l_mat[i,:].argmax()
+            score = l_mat[i, j]
+
+            if score>self.beta:
+                match_mat[i, j] = 1
 
         return match_mat
     
@@ -127,7 +153,7 @@ class TrackerEngine:
         #time.sleep(1)
 
         for ob in obs:
-            self.ax.scatter(ob[0].item(), ob[1].item(), color='blue')
+            self.ax.scatter(ob[0].item(), ob[1].item(), color='black')
         
             self.fig.canvas.draw()
             time.sleep(0.1)
@@ -150,7 +176,7 @@ class TrackerEngine:
         for i,obs in enumerate(self.observations):
             
             l_mat = self.likelihood_mat(self.tracks, obs)
-            match_mat = self.match_mat(l_mat)
+            match_mat = self.match_mat_tracker(l_mat)
             
             self.update_trackers(obs, match_mat)
 

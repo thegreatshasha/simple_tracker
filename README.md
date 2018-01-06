@@ -22,3 +22,8 @@
 * Create dataset of randomly moving particles and velocities.
 
 * Create jpda dataset to debug. Show that hungarian fails.
+
+## TODO
+
+* Add noise to trajectories. 
+* 
