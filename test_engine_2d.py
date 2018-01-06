@@ -7,7 +7,7 @@ import time
 
 class ToyDataset:
 
-    def __init__(self, num_particles=2):
+    def __init__(self, num_particles=2, eta=0.5):
         self.num_particles = num_particles
 
         self.F = np.matrix('''
@@ -23,13 +23,15 @@ class ToyDataset:
 
         self.observations = []
 
+        self.eta = eta
+
     def update(self):
         
         detections = []
 
         for i in range(len(self.particles)):
-            self.particles[i] = self.F * self.particles[i]
-            pos = self.H * self.particles[i]
+            self.particles[i] = self.F * self.particles[i] 
+            pos = self.H * self.particles[i] + self.eta*np.matrix(np.random.rand(2,1))
 
             detections.append(pos)
 
@@ -45,7 +47,7 @@ class TrackerEngineTest2D(unittest.TestCase):
     """Tests for `primes.py`."""
 
     def test_single_bead_2d(self):
-        dg = ToyDataset(num_particles=10)
+        dg = ToyDataset(num_particles=5, eta=0.5)
         detections = dg.generate(n=15)
         # detections = [
         #                 [np.matrix('''0.5 0.5''').T, np.matrix('''4.5 4.5''').T],
