@@ -45,7 +45,7 @@ class TrackerEngineTest2D(unittest.TestCase):
     """Tests for `primes.py`."""
 
     def test_single_bead_2d(self):
-        dg = ToyDataset(num_particles=5)
+        dg = ToyDataset(num_particles=10)
         detections = dg.generate(n=15)
         # detections = [
         #                 [np.matrix('''0.5 0.5''').T, np.matrix('''4.5 4.5''').T],
@@ -68,6 +68,14 @@ class TrackerEngineTest2D(unittest.TestCase):
         print(len(e.tracks))
 
         raw_input('your mom')
+
+    def _test_match_hungarian(self):
+        detections = []
+        e = TrackerEngine(0.0001, detections)
+        likelihood_mat = np.matrix('0.01 1.2 0.13; 0.05 0.5 0.16')
+        match_mat = e.match_mat_hungarian(likelihood_mat)
+        print(likelihood_mat)
+        print(match_mat)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import numpy as np
 from track import Track
 import matplotlib.pyplot as plt
 import time
+from scipy.optimize import linear_sum_assignment
 
 class TrackerEngine:
     """
@@ -104,6 +105,18 @@ class TrackerEngine:
                 match_mat[i, j] = 1
 
         return match_mat
+
+    def match_mat_hungarian(self, l_mat):
+        """ Does hungarian matching """
+        """ Run hungarian algorithm """
+        """ Get matcbes """
+        """ How are the results qualtiatively compared to tracker match """
+        match_mat = np.zeros(l_mat.shape)
+
+        row_ind, col_ind = linear_sum_assignment(-l_mat)
+        match_mat[row_ind, col_ind] = 1
+
+        return match_mat
     
     def update_trackers(self, obs, match_mat):
         """
@@ -176,7 +189,7 @@ class TrackerEngine:
         for i,obs in enumerate(self.observations):
             
             l_mat = self.likelihood_mat(self.tracks, obs)
-            match_mat = self.match_mat_tracker(l_mat)
+            match_mat = self.match_mat_hungarian(l_mat)
             
             self.update_trackers(obs, match_mat)
 

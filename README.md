@@ -26,4 +26,4 @@
 ## TODO
 
 * Add noise to trajectories. 
-* 
+* Does the hungarian matching actuall perform worse compared to the greedy tracker matching algorithm
