@@ -1,5 +1,5 @@
 import numpy as np
-csv_dir = 'csv_final/*'
+csv_dir = 'detections_csv/*'
 
 num = 30
 from glob import glob
@@ -10,11 +10,13 @@ print(out_files)
 det_array = []
 
 for out_fl in out_files:
-	data = np.loadtxt(out_fl)
+	data = np.loadtxt(open(out_fl, "rb"), delimiter=",", skiprows=1)
+
+	#data = np.loadtxt(out_fl, delimiter='.')
 
 	data_mat = []
 
-	for x, y, theta in data:
+	for x, y in data:
 		data_mat.append(np.matrix([x, y]).T)
 
 	det_array.append(data_mat)

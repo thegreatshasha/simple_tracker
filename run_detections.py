@@ -1,9 +1,12 @@
 from engine import TrackerEngine
 import numpy as np
+import glob
+
 detections = np.load('data.npy')
+img_fls = sorted(glob.glob('test_images/*'))
 
 #print(detections)
-e = TrackerEngine(0.0001, detections)
+e = TrackerEngine(0.00001, detections, img_fls)
 e.run()
 
 print(e.tracks)

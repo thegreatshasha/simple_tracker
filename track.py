@@ -60,10 +60,10 @@ class Track:
         """
         Predicts the future based on current state.
         """
-        print('previously', self.P, self.F*self.P*self.F.T)
+        #print('previously', self.P, self.F*self.P*self.F.T)
         self.x = self.F * self.x
         self.P = self.F*self.P*self.F.T + self.Q
-        print('after', self.P, self.Q)
+        #print('after', self.P, self.Q)
         
     def update(self, y):
         """

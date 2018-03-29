@@ -4,6 +4,7 @@ from track import Track
 import matplotlib.pyplot as plt
 import time
 from scipy.optimize import linear_sum_assignment
+from skimage.io import imread
 
 class TrackerEngine:
     """
@@ -15,7 +16,7 @@ class TrackerEngine:
     
     """
     
-    def __init__(self, beta, observations):
+    def __init__(self, beta, observations, images):
         """
         Initializes the tracker engine.
         
@@ -29,8 +30,10 @@ class TrackerEngine:
         self.beta = beta
         self.tracks = []
         self.observations = observations
+        self.images = images
 
         # Drawing canvas
+        plt.ion()
         self.fig, self.ax = plt.subplots(figsize=(30,30))
         self.fig.show() # Should we keep this active permanently?
         #self.ax.set_xlim(0,10)
@@ -155,6 +158,10 @@ class TrackerEngine:
             if t.lhood > self.beta:
                 new_tracks.append(t)
             else:
+                self.ax.scatter(t.x[0].item(), t.x[1].item(), marker='x', color='red', s=20
+                    )
+        
+                self.fig.canvas.draw()
                 print('tracker killed!')
 
         self.tracks = new_tracks
@@ -175,8 +182,12 @@ class TrackerEngine:
         #     self.fig.canvas.print_figure('snapshots/%d'%i)
             #time.sleep(0.1)
 
+        img = imread(self.images[i])
+
+        self.ax.imshow(img)
+
         for t in self.tracks:
-            self.ax.scatter(t.x[0].item(), t.x[1].item(), color=t.color)
+            self.ax.scatter(t.x[0].item(), t.x[1].item(), color=t.color, s=5)
         
             self.fig.canvas.draw()
 
