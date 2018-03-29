@@ -1,3 +1,4 @@
+from tqdm import tqdm
 import numpy as np
 from track import Track
 import matplotlib.pyplot as plt
@@ -30,10 +31,10 @@ class TrackerEngine:
         self.observations = observations
 
         # Drawing canvas
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figsize=(30,30))
         self.fig.show() # Should we keep this active permanently?
-        self.ax.set_xlim(0,10)
-        self.ax.set_ylim(0,10)
+        #self.ax.set_xlim(0,10)
+        #self.ax.set_ylim(0,10)
         
     def likelihood_mat(self, tracks, obs):
         """
@@ -48,7 +49,7 @@ class TrackerEngine:
         """
         l_mat = np.zeros((len(tracks), len(obs)))
 
-        for i in range(len(tracks)):
+        for i in tqdm(range(len(tracks))):
             for j in range(len(obs)):
                 l_mat[i,j] = tracks[i].likelihood(obs[j])
         
@@ -153,6 +154,8 @@ class TrackerEngine:
         for t in self.tracks:
             if t.lhood > self.beta:
                 new_tracks.append(t)
+            else:
+                print('tracker killed!')
 
         self.tracks = new_tracks
 
@@ -165,11 +168,12 @@ class TrackerEngine:
         """ Draws things on a canvas object """
         #time.sleep(1)
 
-        for ob in obs:
-            self.ax.scatter(ob[0].item(), ob[1].item(), color='black')
+        # for ob in obs:
+        #     self.ax.scatter(ob[0].item(), ob[1].item(), color='black')
         
-            self.fig.canvas.draw()
-            time.sleep(0.1)
+        #     self.fig.canvas.draw()
+        #     self.fig.canvas.print_figure('snapshots/%d'%i)
+            #time.sleep(0.1)
 
         for t in self.tracks:
             self.ax.scatter(t.x[0].item(), t.x[1].item(), color=t.color)
@@ -186,16 +190,25 @@ class TrackerEngine:
         4. Updates tracks based on the match matrix result. Should have an edge case for 0 track size.
         5. Stores x estimates in another array which can then be printed.
         """
-        for i,obs in enumerate(self.observations):
+        for i,obs in tqdm(enumerate(self.observations)):
             
+            print('calculating likelihood', len(self.tracks), len(obs))
             l_mat = self.likelihood_mat(self.tracks, obs)
+
+            print('calculating hungarian matching')
             match_mat = self.match_mat_hungarian(l_mat)
+            #match_mat = self.match_mat_det(l_mat)
+            #match_mat = self.match_mat_tracker(l_mat)
             
+            print('updating trackers')
             self.update_trackers(obs, match_mat)
 
             self.draw(obs,i)
 
+            print('pruning trackers')
             self.prune()
+
+            print('predicting ahead')
             self.predict()
 
         # THis is just a stupid for loop 
