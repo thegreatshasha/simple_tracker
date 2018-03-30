@@ -35,6 +35,7 @@ class TrackerEngine:
         # Drawing canvas
         plt.ion()
         self.fig, self.ax = plt.subplots(figsize=(30,30))
+        self.fig2, self.ax2 = plt.subplots(figsize=(30,30))
         self.fig.show() # Should we keep this active permanently?
         #self.ax.set_xlim(0,10)
         #self.ax.set_ylim(0,10)
@@ -174,24 +175,32 @@ class TrackerEngine:
     def draw(self, obs, i):
         """ Draws things on a canvas object """
         #time.sleep(1)
+        img = imread(self.images[i])
+        self.ax.imshow(img)
+        self.ax2.imshow(img)
 
-        # for ob in obs:
-        #     self.ax.scatter(ob[0].item(), ob[1].item(), color='black')
+
+        for ob in obs:
+            self.ax2.scatter(ob[0].item(), ob[1].item(), color='black', s=5)
         
-        #     self.fig.canvas.draw()
-        #     self.fig.canvas.print_figure('snapshots/%d'%i)
+            self.fig2.canvas.draw()
+        
+        self.fig2.canvas.print_figure('figures/%d_det'%i)
             #time.sleep(0.1)
 
-        img = imread(self.images[i])
 
-        self.ax.imshow(img)
-
+        
         for t in self.tracks:
             self.ax.scatter(t.x[0].item(), t.x[1].item(), color=t.color, s=5)
         
             self.fig.canvas.draw()
+        
+        self.fig.canvas.print_figure('figures/%d_track'%i)
+
 
         # Also draw observations?
+        #plt.savefig('figures/fig_%d.png', fig)
+        #plt.savefig('figures/fig_det_%d.png', fig2)
     
     def run(self):
         """
