@@ -156,6 +156,7 @@ class TrackerEngine:
         new_tracks = []
 
         for t in self.tracks:
+            t.serialize()
             if t.lhood > self.beta:
                 new_tracks.append(t)
             else:
@@ -223,7 +224,7 @@ class TrackerEngine:
             print('updating trackers')
             self.update_trackers(obs, match_mat)
 
-            self.draw(obs,i)
+            #self.draw(obs,i)
 
             print('pruning trackers')
             self.prune()

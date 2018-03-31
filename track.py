@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import multivariate_normal
 import random
+import uuid
 
 class Track:
     """
@@ -39,13 +40,13 @@ class Track:
         #self.F = np.matrix('1. 1.; 0. 1.')
 
         # Motion model parameters for 2d
-        self.R = np.matrix(np.eye(2))
+        self.R = np.matrix(np.eye(2))/10
         self.Q = np.matrix('''
                       0.33  0.    0.5   0.;
                       0.    0.33  0.     0.5;
                       0.    0.    1.     0.;
                       0.    0.    0.     1.
-                      ''')/1000
+                      ''')*100
         self.H = np.matrix('1. 0. 0. 0.; 0. 1. 0. 0.')
         self.F = np.matrix('''
                       1. 0. 1. 0.;
@@ -55,6 +56,9 @@ class Track:
                       ''')
 
         self.color = np.random.rand(3,)
+        self.history = []
+        self.id = str(uuid.uuid4())[:8]
+        self.location = 'tracks/%s.csv'%self.id
         
     def predict(self):
         """
@@ -80,7 +84,9 @@ class Track:
         self.P = (np.eye(self.x.shape[0]) - K*self.H)*self.P # Update covariance
 
         self.lhood = self.likelihood(y)
-        
+        #import pdb; pdb.set_trace()
+        self.history.append(np.array(y).flatten())
+
     def likelihood(self, y):
         """
         Returns the likelihood of generating a certain observation based on the current belief
@@ -99,3 +105,8 @@ class Track:
         likelihood = var.pdf(np.asarray(y).reshape(-1))
         
         return likelihood
+
+    def serialize(self):
+        hist_array = np.asarray(self.history)
+        np.savetxt(self.location, hist_array, delimiter=",")
+

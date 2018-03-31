@@ -1,10 +1,10 @@
 import numpy as np
 csv_dir = 'detections_csv/*'
 
-num = 30
+num = 100
 from glob import glob
 
-out_files = sorted(glob(csv_dir))[:num]
+out_files = sorted(glob(csv_dir))
 print(out_files)
 
 det_array = []
