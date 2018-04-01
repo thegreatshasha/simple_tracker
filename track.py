@@ -69,7 +69,7 @@ class Track:
         self.P = self.F*self.P*self.F.T + self.Q
         #print('after', self.P, self.Q)
         
-    def update(self, y):
+    def update(self, y, t):
         """
         Updates the state estimate based on the current observation
         
@@ -85,7 +85,7 @@ class Track:
 
         self.lhood = self.likelihood(y)
         #import pdb; pdb.set_trace()
-        self.history.append(np.array(y).flatten())
+        self.history.append([t, y[0].item(), y[1].item()])
 
     def likelihood(self, y):
         """

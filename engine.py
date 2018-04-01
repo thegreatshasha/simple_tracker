@@ -123,7 +123,7 @@ class TrackerEngine:
 
         return match_mat
     
-    def update_trackers(self, obs, match_mat):
+    def update_trackers(self, i, obs, match_mat):
         """
         Updates the trackers based on the matching with detections.
         If match found, runs the tracker's update function.
@@ -142,12 +142,12 @@ class TrackerEngine:
             
             if total>0:
                 t_idx = match_mat[:,j].argmax()
-                self.tracks[t_idx].update(obs[j])
+                self.tracks[t_idx].update(obs[j], i)
                 
             else:
                 # Pop new tracker ontop of the queue of trackers
                 t = Track()
-                t.update(obs[j])
+                t.update(obs[j], i)
                 
                 self.tracks.append(t)
 
@@ -222,7 +222,7 @@ class TrackerEngine:
             #match_mat = self.match_mat_tracker(l_mat)
             
             print('updating trackers')
-            self.update_trackers(obs, match_mat)
+            self.update_trackers(i, obs, match_mat)
 
             #self.draw(obs,i)
 
