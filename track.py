@@ -58,7 +58,7 @@ class Track:
         self.color = np.random.rand(3,)
         self.history = []
         self.id = str(uuid.uuid4())[:8]
-        self.location = 'tracks/%s.csv'%self.id
+        self.location = 'tracks_backward/%s.csv'%self.id
         
     def predict(self):
         """

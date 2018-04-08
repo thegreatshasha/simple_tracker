@@ -1,10 +1,12 @@
+""" Saves detections as a numpy array to work with """
+
 import numpy as np
 csv_dir = 'detections_csv/*'
 
 num = 100
 from glob import glob
 
-out_files = sorted(glob(csv_dir))
+out_files = sorted(glob(csv_dir), reverse=True)
 print(out_files)
 
 det_array = []
@@ -21,6 +23,6 @@ for out_fl in out_files:
 
 	det_array.append(data_mat)
 
-np.save('data.npy', det_array)
+np.save('data_backward.npy', det_array)
 
 #print(det_array)

@@ -6,13 +6,14 @@ import random
 from tqdm import tqdm
 
 def query(track_data, t):
-	return track_data[np.isin(track_data[:,0], range(t+1-10, t+1))][:,[1,2]]
+	return track_data[np.isin(track_data[:,0], range(t+1-5, t+1))][:,[1,2]]
 
-track_fls = glob.glob('tracks/*.csv')
-track_fls_random = random.sample(track_fls, 30)
-img_fls = sorted(glob.glob('test_images/*'))
-det_fls = sorted(glob.glob('detections_csv/*'))
-detections = np.load('data.npy')
+track_fls = glob.glob('tracks_backward/*.csv')
+track_fls_random = track_fls
+#track_fls_random = random.sample(track_fls, 30)
+img_fls = sorted(glob.glob('test_images/*'), reverse=True)
+det_fls = sorted(glob.glob('detections_csv/*'), reverse=True)
+detections = np.load('data_backward.npy')
 print()
 
 
@@ -36,7 +37,7 @@ for t, img_fl in tqdm(enumerate(img_fls)):
 		
 		plt.scatter(xy[:,0], xy[:,1], s=5)
 	
-	plt.savefig('tracks_outputs/%d'%t)
+	plt.savefig('tracks_outputs_backward/%d'%t)
 	plt.close()
 
 
